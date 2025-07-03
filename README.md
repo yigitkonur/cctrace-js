@@ -9,7 +9,7 @@ A command-line tool that exports Claude Code chat sessions with conversation his
 - **PID-Based Validation**: Cross reference PID to ensure the correct session is exported
 - **Multiple Output Formats**: Generates Markdown, JSON, and raw JSONL files
 - **Session Statistics**: Provides detailed metrics about your conversation
-- **Slash Command Integration**: Export directly from Claude Code with `/user:export`
+- **Slash Command Integration**: Export directly from Claude Code with `/export`
 - **Timestamped Archives**: Each export is saved with timestamp and session ID
 
 ## Requirements
