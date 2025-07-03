@@ -93,3 +93,7 @@ pip-delete-this-directory.txt
 pip-log.txt
 pip-wheel-metadata/
 venv
+
+# Claude Export folders
+claude_export_*/
+*.jsonl

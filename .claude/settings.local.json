@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(diff:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(CLAUDE_EXPORT_COPY_TO_CWD=false python3 export_claude_session.py --max-age 7200)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }

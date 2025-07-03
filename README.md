@@ -11,6 +11,7 @@ A command-line tool that exports Claude Code chat sessions with conversation his
 - **Session Statistics**: Provides detailed metrics about your conversation
 - **Slash Command Integration**: Export directly from Claude Code with `/export`
 - **Timestamped Archives**: Each export is saved with timestamp and session ID
+- **Auto-Copy to Working Directory**: Automatically copies export to your current directory (configurable)
 
 ![image](https://github.com/user-attachments/assets/b316bd46-94f0-44ef-8030-e73b393cb119)
 
@@ -109,6 +110,7 @@ python3 ~/claude_sessions/export_claude_session.py --output-dir /path/to/exports
 - `--max-age <seconds>`: Set the maximum age for active session detection (default: 300)
 - `--output-dir <path>`: Specify custom output directory
 - `--format <md|xml|all>`: Choose output format (default: all)
+- `--no-copy-to-cwd`: Do not copy export to current directory
 
 ## Export Contents
 
@@ -248,6 +250,36 @@ Preserves all available data fields in a structured format:
 Generates both Markdown and XML outputs in the same export, giving you the best of both worlds:
 - Human-readable Markdown for easy review
 - Machine-parseable XML with complete data preservation
+
+## Auto-Copy to Working Directory
+
+By default, the export tool automatically copies the complete export folder to your current working directory with the name `claude_export_YYYY-MM-DD_HH-MM-SS_sessionid`. This makes it easy to:
+- Include exports in your project repository
+- Access exports without navigating to `~/claude_sessions/exports/`
+- Keep exports with the relevant project code
+
+### Disabling Auto-Copy
+
+You can disable this feature in three ways:
+
+1. **Command line flag:**
+   ```bash
+   python3 export_claude_session.py --no-copy-to-cwd
+   ```
+
+2. **Environment variable:**
+   ```bash
+   export CLAUDE_EXPORT_COPY_TO_CWD=false
+   python3 export_claude_session.py
+   ```
+
+3. **In your shell configuration:**
+   ```bash
+   # Add to ~/.bashrc or ~/.zshrc
+   export CLAUDE_EXPORT_COPY_TO_CWD=false
+   ```
+
+The copied folders are automatically excluded from git via the `.gitignore` pattern `claude_export_*/`.
 
 ## How It Works
 

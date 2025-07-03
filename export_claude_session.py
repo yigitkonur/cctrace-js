@@ -354,8 +354,15 @@ def prettify_xml(elem):
     reparsed = minidom.parseString(rough_string)
     return reparsed.toprettyxml(indent="  ")
 
-def export_session(session_info, output_dir=None, output_format='all'):
-    """Export a session to the specified output directory."""
+def export_session(session_info, output_dir=None, output_format='all', copy_to_cwd=None):
+    """Export a session to the specified output directory.
+    
+    Args:
+        session_info: Session information dictionary
+        output_dir: Output directory path (default: ~/claude_sessions/exports)
+        output_format: Format to export ('md', 'xml', or 'all')
+        copy_to_cwd: Whether to copy export to current directory (default: check env var)
+    """
     if output_dir is None:
         output_dir = Path.home() / 'claude_sessions' / 'exports'
     
@@ -455,6 +462,24 @@ def export_session(session_info, output_dir=None, output_format='all'):
         f.write(f"- Models: {', '.join(metadata['models_used'])}\n")
         f.write(f"\nExported to: {export_dir}\n")
     
+    # Check if we should copy to current working directory
+    if copy_to_cwd is None:
+        # Check environment variable (default: True unless explicitly disabled)
+        copy_to_cwd = os.environ.get('CLAUDE_EXPORT_COPY_TO_CWD', 'true').lower() != 'false'
+    
+    if copy_to_cwd:
+        # Copy export folder to current working directory
+        cwd = Path.cwd()
+        cwd_export_name = f"claude_export_{timestamp}_{actual_session_id[:8]}"
+        cwd_export_path = cwd / cwd_export_name
+        
+        try:
+            # Copy the entire export directory to CWD
+            shutil.copytree(export_dir, cwd_export_path)
+            print(f"\n📂 Export copied to current directory: {cwd_export_path}")
+        except Exception as e:
+            print(f"\n⚠️  Could not copy to current directory: {e}")
+    
     return export_dir
 
 def main():
@@ -465,6 +490,8 @@ def main():
                        help='Output format (default: all)')
     parser.add_argument('--max-age', type=int, default=300,
                        help='Max age in seconds for active session detection (default: 300)')
+    parser.add_argument('--no-copy-to-cwd', action='store_true',
+                       help='Do not copy export to current directory')
     
     args = parser.parse_args()
     
@@ -542,7 +569,9 @@ def main():
     print(f"\n📤 Exporting session file: {session_to_export['session_id'][:8]}...")
     
     output_dir = Path(args.output_dir) if args.output_dir else None
-    export_path = export_session(session_to_export, output_dir, args.format)
+    # Pass copy_to_cwd as False if --no-copy-to-cwd is specified, otherwise None (use default)
+    copy_to_cwd = False if args.no_copy_to_cwd else None
+    export_path = export_session(session_to_export, output_dir, args.format, copy_to_cwd)
     
     # Check if actual session ID differs from filename
     session_info_file = export_path / 'session_info.json'
