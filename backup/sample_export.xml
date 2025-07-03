@@ -1,0 +1,89 @@
+<?xml version="1.0" ?>
+<claude-session xmlns="https://claude.ai/session-export/v1" export-version="1.0">
+  <metadata>
+    <session-id>f33cdb42-0a41-40d4-91eb-c89c109af38a</session-id>
+    <version>1.0.41</version>
+    <working-directory>/mnt/c/python/myproject</working-directory>
+    <start-time>2025-07-02T14:30:00.000Z</start-time>
+    <end-time>2025-07-02T15:45:30.000Z</end-time>
+    <export-time>2025-07-02T16:00:00.000Z</export-time>
+    <statistics>
+      <total-messages>42</total-messages>
+      <user-messages>18</user-messages>
+      <assistant-messages>24</assistant-messages>
+      <tool-uses>15</tool-uses>
+      <models-used>
+        <model>claude-opus-4-20250514</model>
+      </models-used>
+    </statistics>
+  </metadata>
+  <messages>
+    <message uuid="msg-001" timestamp="2025-07-02T14:30:00.000Z">
+      <event-type>user</event-type>
+      <working-directory>/mnt/c/python/myproject</working-directory>
+      <role>user</role>
+      <content>
+        <text>Can you help me create a Python function to calculate fibonacci numbers?</text>
+      </content>
+    </message>
+    
+    <message uuid="msg-002" parent-uuid="msg-001" timestamp="2025-07-02T14:30:05.000Z">
+      <event-type>assistant</event-type>
+      <working-directory>/mnt/c/python/myproject</working-directory>
+      <request-id>req_abc123</request-id>
+      <role>assistant</role>
+      <model>claude-opus-4-20250514</model>
+      <content>
+        <thinking signature="cryptographic-signature-here">The user wants a Python function to calculate Fibonacci numbers. I should provide a clear, efficient implementation with good practices. I'll offer both an iterative and recursive solution, explaining the trade-offs.</thinking>
+        <text>I'll help you create a Python function to calculate Fibonacci numbers. Here's an efficient iterative implementation:</text>
+      </content>
+      <usage>
+        <input-tokens>25</input-tokens>
+        <output-tokens>150</output-tokens>
+        <cache-creation-tokens>0</cache-creation-tokens>
+        <cache-read-tokens>0</cache-read-tokens>
+        <service-tier>standard</service-tier>
+      </usage>
+    </message>
+    
+    <message uuid="msg-003" parent-uuid="msg-002" timestamp="2025-07-02T14:30:10.000Z">
+      <event-type>assistant</event-type>
+      <working-directory>/mnt/c/python/myproject</working-directory>
+      <role>assistant</role>
+      <model>claude-opus-4-20250514</model>
+      <content>
+        <tool-use id="toolu_01ABC123xyz" name="Edit">
+          <input>{
+  "file_path": "/mnt/c/python/myproject/fibonacci.py",
+  "old_string": "",
+  "new_string": "def fibonacci(n):\n    \"\"\"Calculate the nth Fibonacci number.\"\"\"\n    if n < 0:\n        raise ValueError(\"n must be non-negative\")\n    elif n <= 1:\n        return n\n    \n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, a + b\n    \n    return b"
+}</input>
+        </tool-use>
+      </content>
+    </message>
+    
+    <message uuid="msg-004" parent-uuid="msg-003" timestamp="2025-07-02T14:30:12.000Z">
+      <event-type>user</event-type>
+      <working-directory>/mnt/c/python/myproject</working-directory>
+      <role>user</role>
+      <content>
+        <tool-result tool-use-id="toolu_01ABC123xyz">File created successfully at: /mnt/c/python/myproject/fibonacci.py</tool-result>
+      </content>
+      <tool-execution-metadata>
+        <response-bytes>256</response-bytes>
+        <response-code>200</response-code>
+        <response-text>OK</response-text>
+        <duration-ms>45</duration-ms>
+      </tool-execution-metadata>
+    </message>
+    
+    <message uuid="msg-005" parent-uuid="msg-004" timestamp="2025-07-02T14:30:45.000Z">
+      <event-type>user</event-type>
+      <working-directory>/mnt/c/python/myproject</working-directory>
+      <role>user</role>
+      <content>
+        <text>Can you also show me a recursive version?</text>
+      </content>
+    </message>
+  </messages>
+</claude-session>
