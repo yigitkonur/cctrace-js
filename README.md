@@ -105,30 +105,117 @@ Each export creates a timestamped directory containing:
 
 ```
 ~/claude_sessions/exports/2025-07-02_16-45-00_f33cdb42/
-├── session_info.json      # Detailed metadata and statistics
-├── conversation_full.md   # Complete formatted conversation (Markdown)
-├── conversation_full.xml  # Complete formatted conversation (XML)
-├── raw_messages.jsonl     # Original JSONL data
-└── summary.txt           # Quick overview with key metrics
+├── session_info.json      # Complete session metadata including SESSION ID
+├── conversation_full.md   # Human-readable conversation with all content
+├── conversation_full.xml  # Fully labeled XML with complete metadata
+├── raw_messages.jsonl     # Original JSONL data with all fields
+└── summary.txt           # Quick overview with session ID and statistics
 ```
 
-### File Descriptions
+### Detailed File Contents
 
-- **session_info.json**: Contains session ID, timestamps, message counts, token usage, and models used
-- **conversation_full.md**: Human-readable markdown with:
-  - User messages with timestamps
-  - Assistant responses
-  - Collapsible thinking/reasoning blocks
-  - Tool usage details and results
-- **conversation_full.xml**: Structured XML format with:
-  - Complete metadata preservation
-  - All message fields and attributes
+#### **session_info.json** - Complete Session Metadata
+Contains ALL session metadata including:
+- **Session ID** (unique identifier for your chat session)
+- Project directory path
+- Start and end timestamps
+- Total message counts by type
+- Models used
+- Token usage statistics
+
+Example:
+```json
+{
+  "session_id": "f33cdb42-0a41-40d4-91eb-c89c109af38a",
+  "project_dir": "/mnt/c/python/myproject",
+  "start_time": "2025-07-02T20:06:59.614Z",
+  "end_time": "2025-07-02T21:39:11.037Z",
+  "total_messages": 145,
+  "user_messages": 58,
+  "assistant_messages": 87,
+  "tool_uses": 42,
+  "models_used": ["claude-opus-4-20250514"]
+}
+```
+
+#### **conversation_full.xml** - Complete XML Export
+Comprehensive XML format with FULL metadata labeling:
+- **Session-level metadata**: Session ID, version, timestamps, working directory
+- **Message-level metadata**: 
+  - UUID and parent-UUID for message relationships
+  - Event types and request IDs
+  - Role (user/assistant) and model information
+- **Content preservation**:
+  - Text messages with proper encoding
   - Thinking blocks with cryptographic signatures
-  - Tool execution metadata
-  - Parent-child relationships via UUIDs
-  - Suitable for programmatic parsing and transformation
-- **raw_messages.jsonl**: Complete unmodified JSONL data for programmatic access
-- **summary.txt**: Plain text summary perfect for quick reference
+  - Tool uses with complete input/output data
+  - Tool execution metadata (response codes, duration, bytes)
+- **Token usage per message**: Input/output tokens, cache tokens, service tier
+
+Example XML structure:
+```xml
+<claude-session xmlns="https://claude.ai/session-export/v1" export-version="1.0">
+  <metadata>
+    <session-id>f33cdb42-0a41-40d4-91eb-c89c109af38a</session-id>
+    <working-directory>/mnt/c/python/myproject</working-directory>
+    <start-time>2025-07-02T20:06:59.614Z</start-time>
+    <export-time>2025-07-02T22:15:00.000Z</export-time>
+  </metadata>
+  <messages>
+    <message uuid="492b16e4-af89-408f-b144-ae571d4047b5" 
+             parent-uuid="null" 
+             timestamp="2025-07-02T20:06:59.614Z">
+      <role>user</role>
+      <content>
+        <text>Your message here</text>
+      </content>
+    </message>
+    <message uuid="6892a3b3-63cf-4052-8f3f-850dca83d50c" 
+             parent-uuid="492b16e4-af89-408f-b144-ae571d4047b5"
+             timestamp="2025-07-02T20:07:07.357Z">
+      <role>assistant</role>
+      <model>claude-opus-4-20250514</model>
+      <content>
+        <thinking signature="Es0ICkYIBRgCKkCeXs4...">
+          Internal reasoning content
+        </thinking>
+        <text>Assistant response</text>
+        <tool-use id="toolu_01ABC..." name="Bash">
+          <input>{"command": "ls -la", "description": "List files"}</input>
+        </tool-use>
+      </content>
+      <usage>
+        <input-tokens>1500</input-tokens>
+        <output-tokens>750</output-tokens>
+        <cache-creation-tokens>0</cache-creation-tokens>
+        <service-tier>standard</service-tier>
+      </usage>
+    </message>
+  </messages>
+</claude-session>
+```
+
+#### **conversation_full.md** - Human-Readable Export
+Markdown format including:
+- Session ID prominently displayed at the top
+- All user messages and assistant responses
+- Collapsible thinking/reasoning blocks
+- Tool usage with inputs and outputs
+- Timestamps for each interaction
+
+#### **raw_messages.jsonl** - Original Data
+Complete, unmodified JSONL file containing:
+- Every field from the original Claude Code session
+- Session IDs, UUIDs, parent relationships
+- All metadata exactly as stored by Claude Code
+- Perfect for programmatic processing or analysis
+
+#### **summary.txt** - Quick Reference
+Plain text summary featuring:
+- Session ID for easy reference
+- Export timestamp
+- Key statistics
+- File locations
 
 ### Export Formats
 
