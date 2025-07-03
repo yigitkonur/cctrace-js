@@ -77,6 +77,10 @@ In any Claude Code session, simply type:
 ```
 /user:export
 ```
+or 
+```
+/export
+```
 
 This will:
 1. Automatically detect your current session
