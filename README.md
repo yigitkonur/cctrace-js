@@ -1,8 +1,8 @@
 # Claude Code Session Export Tool
 
-A powerful command-line tool that exports your Claude Code chat sessions with complete conversation history, including internal reasoning blocks, tool usage, and comprehensive metadata.
+A command-line tool that exports Claude Code chat sessions with conversation history, internal reasoning blocks, tool usage, and comprehensive metadata.
 
-## 🌟 Features
+## Features
 
 - **Automatic Session Detection**: Intelligently identifies your current Claude Code session, even with multiple concurrent sessions
 - **Complete Export**: Captures all messages, thinking blocks, tool uses, and responses
@@ -18,7 +18,7 @@ A powerful command-line tool that exports your Claude Code chat sessions with co
 - Claude Code running on Linux or WSL
 - Access to `~/.claude/projects/` directory
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Clone or download this repository
@@ -32,7 +32,7 @@ chmod +x install.sh
 /user:export
 ```
 
-## 📦 Installation
+## Installation
 
 ### Automated Installation
 
@@ -62,7 +62,7 @@ chmod +x install.sh
    cp export.md ~/.claude/commands/
    ```
 
-## 🎯 Usage
+## Usage
 
 ### Using the Slash Command (Recommended)
 
@@ -99,7 +99,7 @@ python3 ~/claude_sessions/export_claude_session.py --output-dir /path/to/exports
 - `--output-dir <path>`: Specify custom output directory
 - `--format <md|xml|all>`: Choose output format (default: all)
 
-## 📁 Export Contents
+## Export Contents
 
 Each export creates a timestamped directory containing:
 
@@ -238,7 +238,7 @@ Generates both Markdown and XML outputs in the same export, giving you the best 
 - Human-readable Markdown for easy review
 - Machine-parseable XML with complete data preservation
 
-## 🔧 How It Works
+## How It Works
 
 ### Session Detection Process
 
@@ -259,7 +259,7 @@ The tool handles multiple Claude Code sessions running in the same directory by:
 - Providing clear feedback about which session is being exported
 - Falling back gracefully when automatic detection isn't possible
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### "No Claude Code sessions found"
 - Ensure you're running from a directory with active Claude Code sessions
@@ -278,7 +278,7 @@ The tool handles multiple Claude Code sessions running in the same directory by:
 - Claude Code writes to JSONL files in real-time
 - If a session appears stale, try sending a message to trigger an update
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
 
@@ -292,17 +292,17 @@ Key functions:
 - `parse_jsonl_file()`: Extracts and processes conversation data
 - `format_message_markdown()`: Converts messages to readable format
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Inspired by the need for better Claude Code session management
 - Built for the Claude Code community
 - Thanks to all contributors and users
 
-## 📮 Support
+## Support
 
 For issues, questions, or suggestions:
 - Open an issue on GitHub
@@ -310,5 +310,3 @@ For issues, questions, or suggestions:
 - Review the troubleshooting section
 
 ---
-
-**Note**: This tool is not officially affiliated with Anthropic or Claude Code. It's a community-built utility designed to enhance the Claude Code experience.
