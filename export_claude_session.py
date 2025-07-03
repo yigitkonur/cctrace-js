@@ -362,10 +362,11 @@ def export_session(session_info, output_dir=None, output_format='all'):
     # Parse the session file
     messages, metadata = parse_jsonl_file(session_info['path'])
     
-    # Create output directory with timestamp and session ID
+    # Create output directory with timestamp and actual session ID from metadata
     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    session_id = session_info['session_id']
-    export_dir = output_dir / f"{timestamp}_{session_id[:8]}"
+    # Use the actual session ID from the file content, not the filename
+    actual_session_id = metadata['session_id'] if metadata['session_id'] else session_info['session_id']
+    export_dir = output_dir / f"{timestamp}_{actual_session_id[:8]}"
     export_dir.mkdir(parents=True, exist_ok=True)
     
     # Save metadata
@@ -538,10 +539,20 @@ def main():
                 print(f"📌 Defaulting to: {session_to_export['session_id']}")
     
     # Export the session
-    print(f"\n📤 Exporting session: {session_to_export['session_id']}")
+    print(f"\n📤 Exporting session file: {session_to_export['session_id'][:8]}...")
     
     output_dir = Path(args.output_dir) if args.output_dir else None
     export_path = export_session(session_to_export, output_dir, args.format)
+    
+    # Check if actual session ID differs from filename
+    session_info_file = export_path / 'session_info.json'
+    if session_info_file.exists():
+        with open(session_info_file, 'r') as f:
+            actual_metadata = json.load(f)
+            actual_session_id = actual_metadata.get('session_id', '')
+            if actual_session_id and actual_session_id != session_to_export['session_id']:
+                print(f"ℹ️  Note: Actual session ID is {actual_session_id}")
+                print(f"   (File was named {session_to_export['session_id']})")
     
     print(f"\n✅ Session exported successfully!")
     print(f"📁 Output directory: {export_path}")

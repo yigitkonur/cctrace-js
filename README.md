@@ -14,6 +14,9 @@ A command-line tool that exports Claude Code chat sessions with conversation his
 
 ![image](https://github.com/user-attachments/assets/b316bd46-94f0-44ef-8030-e73b393cb119)
 
+![image](https://github.com/user-attachments/assets/5c3ff16a-7470-408c-87de-a6a1aabd33b3)
+
+
 
 ## Requirements
 
@@ -282,9 +285,6 @@ The tool handles multiple Claude Code sessions running in the same directory by:
 - Claude Code writes to JSONL files in real-time
 - If a session appears stale, try sending a message to trigger an update
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit issues or pull requests.
 
 ### Development
 
