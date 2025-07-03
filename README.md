@@ -22,6 +22,7 @@ A command-line tool that exports Claude Code chat sessions with conversation his
 
 ```bash
 # Clone or download this repository
+git clone https://github.com/jimmc414/cctrace.git
 cd cctrace
 
 # Run the installer
@@ -109,7 +110,7 @@ Each export creates a timestamped directory containing:
 ├── conversation_full.md   # Human-readable conversation with all content
 ├── conversation_full.xml  # Fully labeled XML with complete metadata
 ├── raw_messages.jsonl     # Original JSONL data with all fields
-└── summary.txt           # Quick overview with session ID and statistics
+└── summary.txt            # Quick overview with session ID and statistics
 ```
 
 ### Detailed File Contents
