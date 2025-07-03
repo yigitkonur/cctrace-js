@@ -14,7 +14,7 @@ A command-line tool that exports Claude Code chat sessions with conversation his
 
 ## Requirements
 
-- Python 3.6 or higher
+- Python > 3.6
 - Claude Code running on Linux or WSL
 - Access to `~/.claude/projects/` directory
 
@@ -22,7 +22,7 @@ A command-line tool that exports Claude Code chat sessions with conversation his
 
 ```bash
 # Clone or download this repository
-cd claude-code-session-export
+cd cctrace
 
 # Run the installer
 chmod +x install.sh
@@ -291,22 +291,3 @@ Key functions:
 - `identify_current_session()`: Correlates process with session file
 - `parse_jsonl_file()`: Extracts and processes conversation data
 - `format_message_markdown()`: Converts messages to readable format
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Inspired by the need for better Claude Code session management
-- Built for the Claude Code community
-- Thanks to all contributors and users
-
-## Support
-
-For issues, questions, or suggestions:
-- Open an issue on GitHub
-- Check existing issues for solutions
-- Review the troubleshooting section
-
----
