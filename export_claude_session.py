@@ -354,7 +354,7 @@ def prettify_xml(elem):
     reparsed = minidom.parseString(rough_string)
     return reparsed.toprettyxml(indent="  ")
 
-def export_session(session_info, output_dir=None, output_format='md'):
+def export_session(session_info, output_dir=None, output_format='all'):
     """Export a session to the specified output directory."""
     if output_dir is None:
         output_dir = Path.home() / 'claude_sessions' / 'exports'
