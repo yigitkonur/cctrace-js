@@ -4,7 +4,7 @@ A command-line tool that exports Claude Code chat sessions with conversation his
 
 ## Features
 
-- **Automatic Session Detection**: Intelligently identifies your current Claude Code session, even with multiple concurrent sessions
+- **Automatic Session Detection**: Intelligently identifies your current Claude Code session, even with multiple concurrent sessions, returns the session id, transcript and all session metadata.
 - **Complete Export**: Captures all messages, thinking blocks, tool uses, and responses
 - **PID-Based Validation**: Uses process detection to ensure the correct session is exported
 - **Multiple Output Formats**: Generates Markdown, JSON, and raw JSONL files
