@@ -1,6 +1,6 @@
 # Claude Code Session Export Tool
 
-A command-line tool that exports Claude Code chat sessions with conversation history, internal reasoning blocks, tool usage, and comprehensive metadata.
+A command-line tool that exports Claude Code chat sessions with conversation history, internal reasoning blocks, tool usage, and comprehensive metadata in XML and in markdown.
 
 ## Features
 
