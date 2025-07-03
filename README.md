@@ -12,7 +12,7 @@ A command-line tool that exports Claude Code chat sessions with conversation his
 - **Slash Command Integration**: Export directly from Claude Code with `/user:export`
 - **Timestamped Archives**: Each export is saved with timestamp and session ID
 
-## 📋 Requirements
+## Requirements
 
 - Python 3.6 or higher
 - Claude Code running on Linux or WSL
