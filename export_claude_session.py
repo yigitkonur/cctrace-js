@@ -18,6 +18,15 @@ import time
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 import html
+import re
+
+def clean_text_for_xml(text):
+    """Remove or replace characters that cause XML parsing issues."""
+    if not text:
+        return text
+    # Remove control characters except newline, tab, and carriage return
+    text = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]', '', str(text))
+    return text
 
 def get_parent_claude_pid():
     """Get the PID of the parent Claude process if running inside Claude Code."""
@@ -288,13 +297,13 @@ def format_message_xml(message_data, parent_element):
                         
                         if content_type == 'text':
                             text_elem = ET.SubElement(content_elem, 'text')
-                            text_elem.text = content.get('text', '')
+                            text_elem.text = clean_text_for_xml(content.get('text', ''))
                         
                         elif content_type == 'thinking':
                             thinking_elem = ET.SubElement(content_elem, 'thinking')
                             if 'signature' in content:
                                 thinking_elem.set('signature', content['signature'])
-                            thinking_elem.text = content.get('thinking', '')
+                            thinking_elem.text = clean_text_for_xml(content.get('thinking', ''))
                         
                         elif content_type == 'tool_use':
                             tool_elem = ET.SubElement(content_elem, 'tool-use')
@@ -302,7 +311,7 @@ def format_message_xml(message_data, parent_element):
                             tool_elem.set('name', content.get('name', ''))
                             
                             input_elem = ET.SubElement(tool_elem, 'input')
-                            input_elem.text = json.dumps(content.get('input', {}), indent=2)
+                            input_elem.text = clean_text_for_xml(json.dumps(content.get('input', {}), indent=2))
                         
                         elif content_type == 'tool_result':
                             result_elem = ET.SubElement(content_elem, 'tool-result')
@@ -311,9 +320,9 @@ def format_message_xml(message_data, parent_element):
                             
                             result_content = content.get('content', '')
                             if isinstance(result_content, str):
-                                result_elem.text = result_content
+                                result_elem.text = clean_text_for_xml(result_content)
                             else:
-                                result_elem.text = str(result_content)
+                                result_elem.text = clean_text_for_xml(str(result_content))
         
         # Add usage info
         if 'usage' in msg:
@@ -350,9 +359,14 @@ def format_message_xml(message_data, parent_element):
 
 def prettify_xml(elem):
     """Return a pretty-printed XML string for the Element."""
-    rough_string = ET.tostring(elem, encoding='unicode')
-    reparsed = minidom.parseString(rough_string)
-    return reparsed.toprettyxml(indent="  ")
+    try:
+        rough_string = ET.tostring(elem, encoding='unicode', method='xml')
+        reparsed = minidom.parseString(rough_string)
+        return reparsed.toprettyxml(indent="  ")
+    except Exception as e:
+        # Fallback: return unprettified XML if pretty printing fails
+        print(f"⚠️  XML prettification failed: {e}")
+        return ET.tostring(elem, encoding='unicode', method='xml')
 
 def export_session(session_info, output_dir=None, output_format='all', copy_to_cwd=None):
     """Export a session to the specified output directory.
