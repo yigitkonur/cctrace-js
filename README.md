@@ -33,11 +33,13 @@ git clone https://github.com/jimmc414/cctrace.git
 cd cctrace
 
 # Run the installer
-chmod +x install.sh
-./install.sh
+chmod +x setup.sh
+./setup.sh
 
 # Use in Claude Code
 /user:export
+# Or
+/export
 ```
 
 ## Installation
@@ -46,7 +48,7 @@ chmod +x install.sh
 
 1. Run the installation script:
    ```bash
-   ./install.sh
+   ./setup.sh
    ```
 
 2. The installer will:
