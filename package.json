@@ -1,0 +1,61 @@
+{
+  "name": "cctrace-js",
+  "version": "1.0.0",
+  "description": "A command-line tool that exports Claude Code chat sessions with conversation history, internal reasoning blocks, tool usage, and comprehensive metadata in XML and markdown - TypeScript Edition",
+  "main": "dist/index.js",
+  "bin": {
+    "cctrace": "dist/cli.js",
+    "cctrace-js": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/cli.ts",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "start": "node dist/cli.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "session-export",
+    "chat-export",
+    "cli",
+    "typescript"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/cctrace-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/cctrace-js/issues"
+  },
+  "homepage": "https://github.com/yourusername/cctrace-js#readme",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/jest": "^29.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "commander": "^11.0.0",
+    "chalk": "^4.1.2",
+    "fast-xml-parser": "^4.3.0",
+    "xmlbuilder2": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ]
+}

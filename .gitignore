@@ -1,99 +1,72 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
 
-# Outputs
-*_output.txt
-output.txt
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# Env
-.env
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
 
-# Editors
-.project
-.settings
-.springBeans
-**/.favorites.json
-**/.idea
-**/.vscode
-**/*.Session.vim
-**/*.sw[a-z]
-**/*.vim
-**/*.zwc
-**/*~
+# nyc test coverage
+.nyc_output
 
-# OS generated files
-**/._*
-**/.AppleDouble
-**/.dccache
-**/.dropbox
-**/.dropbox.attr
-**/.dropbox.cache
-**/.DS_Store
-**/.DS_STORE
-**/.lnk
-**/.LSOverride
-**/$RECYCLE.BIN/
-**/Desktop.ini
-**/ehthumbs.db
-**/Thumbs.db
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
 
-# Files that might appear in the root of a volume
-**/.com.apple.timemachine.donotpresent
-**/.DocumentRevisions-V100
-**/.fseventsd
-**/.Spotlight-V100
-**/.TemporaryItems
-**/.Trashes
-**/.VolumeIcon.icns
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# Directories potentially created on remote AFP share
-**/.apdisk
-**/.AppleDB
-**/.AppleDesktop
-**/Network Trash Folder
-**/Temporary Items
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Temp files
-**/.temp
-**/.tmp
-tmp/
-
-# Files that commonly contain secrets
-**/*.key
-**/*.pem
-**/*.pfx
-**/*.p12
-**/*.jks
-**/*.keystore
-**/*.pkcs12
-**/*.pkcs8
-**/*.pkpass
-**/*.secrets
+# Temporary files
+*.tmp
+*.temp
 
 # Logs
-**/*.log
+logs
+*.log
 
-# Build directories
-**/_build/
-**/dist
-build/
-out/
-target/
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# Python
-__pycache__/
-__pypackages__/
-.ipynb_checkpoints
-*$py.class
-celerybeat-schedule
-develop-eggs/
-dmypy.json
-eggs/
-ipython_config.py
-local_settings.py
-pip-delete-this-directory.txt
-pip-log.txt
-pip-wheel-metadata/
-venv
+# Optional npm cache directory
+.npm
 
-# Claude Export folders
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Export outputs (for testing)
 claude_export_*/
+exports/
 *.jsonl

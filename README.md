@@ -1,314 +1,292 @@
-# Claude Code Trace
+# cctrace-js
 
-A command-line tool that exports Claude Code chat sessions with conversation history, internal reasoning blocks, tool usage, and comprehensive metadata in XML and in markdown.
+[![npm version](https://badge.fury.io/js/cctrace-js.svg)](https://badge.fury.io/js/cctrace-js)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
+A command-line tool that exports Claude Code chat sessions with conversation history, internal reasoning blocks, tool usage, and comprehensive metadata in XML and Markdown formats. 
 
-- **Automatic Session Detection**: Intelligently identifies your current Claude Code session, returns the session id, transcript and all session metadata, even with multiple concurrent sessions.
-- **Complete Export**: Captures all messages, thinking blocks, tool uses, and responses
-- **PID Cross Reference Validation**: Cross reference PID to ensure the correct session is exported
-- **Multiple Output Formats**: Generates Markdown, JSON, and raw JSONL files
-- **Session Statistics**: Provides detailed metrics about your conversation
-- **Slash Command Integration**: Export directly from Claude Code with `/export`
-- **Timestamped Archives**: Each export is saved with timestamp and session ID
-- **Auto-Copy to Working Directory**: Automatically copies export to your current directory (configurable)
+**This is a TypeScript/Node.js port of the excellent [cctrace](https://github.com/jimmc414/cctrace) tool originally created by [@jimmc414](https://github.com/jimmc414).** 
 
-![image](https://github.com/user-attachments/assets/b316bd46-94f0-44ef-8030-e73b393cb119)
+## 🙏 Acknowledgments & Motivation
 
-![image](https://github.com/user-attachments/assets/5c3ff16a-7470-408c-87de-a6a1aabd33b3)
+**Huge respect and gratitude to [@jimmc414](https://github.com/jimmc414)** for creating the original [cctrace](https://github.com/jimmc414/cctrace) tool. Your work provided the foundation and inspiration for this TypeScript version.
 
+### Why this TypeScript version exists
 
+As someone who builds extensively with Claude Code, I found myself constantly needing to combine conversation context effectively for:
 
-## Requirements
+- **LLM-friendly context building**: Creating comprehensive conversation exports that can be easily fed back into LLMs for continued development
+- **Project documentation**: Maintaining detailed records of development decisions and reasoning 
+- **Context preservation**: Saving the complete thought process, including internal reasoning blocks, for future reference
+- **Collaborative development**: Sharing detailed conversation history with team members and the Claude Code community
 
-- Python > 3.6
-- Claude Code running on Linux or WSL
+The original Python tool was fantastic, but I needed:
+- **Library integration**: Programmatic access from Node.js/TypeScript projects
+- **Enhanced performance**: Faster startup and processing for frequent use
+- **Extended features**: Message truncation, better formatting options, and modern tooling integration
+- **NPM ecosystem**: Easy installation and distribution through npm
+
+This TypeScript version maintains 100% compatibility with the original while adding modern JavaScript ecosystem benefits.
+
+## ✨ Features
+
+- **🚀 Fast & Reliable**: Built with TypeScript for better performance and type safety
+- **🎯 Automatic Session Detection**: Intelligently identifies your current Claude Code session, even with multiple concurrent sessions
+- **📦 Complete Export**: Captures all messages, thinking blocks, tool uses, and responses
+- **🔍 PID Cross Reference Validation**: Cross-references process ID to ensure the correct session is exported
+- **📄 Multiple Output Formats**: Generates Markdown, JSON, XML, and raw JSONL files
+- **📊 Session Statistics**: Provides detailed metrics about your conversation
+- **🌐 Programmatic API**: Use as a library in your TypeScript/JavaScript projects
+- **📏 Message Truncation**: Control message length with `--max-message-length` for better LLM context management
+- **📁 Auto-Copy to Working Directory**: Automatically copies export to your current directory (configurable)
+- **⚡ CLI & Library**: Use as a command-line tool or import as a library
+
+![Demo](https://github.com/user-attachments/assets/b316bd46-94f0-44ef-8030-e73b393cb119)
+
+## 📋 Requirements
+
+- **Node.js** >= 16.0.0
+- **Claude Code** running on macOS, Linux, or WSL
 - Access to `~/.claude/projects/` directory
 
-## Quick Start
+## 🚀 Quick Start
+
+### Installation
 
 ```bash
-# Clone or download this repository
-git clone https://github.com/jimmc414/cctrace.git
-cd cctrace
+# Install globally for CLI usage
+npm install -g cctrace-js
 
-# Run the installer
-chmod +x setup.sh
-./setup.sh
-
-# Use in Claude Code
-/user:export
-# Or
-/export
+# Or install locally for your project
+npm install cctrace-js
 ```
 
-## Installation
-
-### Automated Installation
-
-1. Run the installation script:
-   ```bash
-   ./setup.sh
-   ```
-
-2. The installer will:
-   - Create necessary directories
-   - Copy files to appropriate locations
-   - Set up the slash command
-   - Verify the installation
-
-### Manual Installation
-
-1. Copy the export script:
-   ```bash
-   mkdir -p ~/claude_sessions
-   cp export_claude_session.py ~/claude_sessions/
-   chmod +x ~/claude_sessions/export_claude_session.py
-   ```
-
-2. Install the slash command:
-   ```bash
-   mkdir -p ~/.claude/commands
-   cp export.md ~/.claude/commands/
-   ```
-
-## Usage
-
-### Using the Slash Command (Recommended)
-
-In any Claude Code session, simply type:
-```
-/user:export
-```
-or 
-```
-/export
-```
-
-This will:
-1. Automatically detect your current session
-2. Export all conversation data
-3. Display a summary directly in Claude Code
-
-### Using the Command Line
+### Command Line Usage
 
 ```bash
 # Export current active session
-python3 ~/claude_sessions/export_claude_session.py
+cctrace
 
-# Export with custom options
-python3 ~/claude_sessions/export_claude_session.py --max-age 600
+# Export with specific format
+cctrace --format md
 
 # Export specific session by ID
-python3 ~/claude_sessions/export_claude_session.py --session-id f33cdb42-0a41-40d4-91eb-c89c109af38a
+cctrace --session-id f33cdb42-0a41-40d4-91eb-c89c109af38a
 
-# Export to custom directory
-python3 ~/claude_sessions/export_claude_session.py --output-dir /path/to/exports
+# Export with custom settings
+cctrace --max-age 600 --output-dir ./exports --no-copy-to-cwd
 ```
 
-### Command Line Options
+### Programmatic Usage
 
-- `--session-id <uuid>`: Export a specific session by ID
-- `--max-age <seconds>`: Set the maximum age for active session detection (default: 300)
-- `--output-dir <path>`: Specify custom output directory
-- `--format <md|xml|all>`: Choose output format (default: all)
-- `--no-copy-to-cwd`: Do not copy export to current directory
+```typescript
+import { exportCurrentSession, findProjectSessions } from 'cctrace-js';
 
-## Export Contents
+// Export current session
+const result = await exportCurrentSession({
+  format: 'all',
+  copyToCwd: true
+});
+
+console.log(`Exported ${result.metadata.totalMessages} messages`);
+
+// Find all sessions for a project
+const sessions = findProjectSessions('/path/to/project');
+console.log(`Found ${sessions.length} sessions`);
+```
+
+## 📖 CLI Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `-s, --session-id <uuid>` | Export specific session by ID | auto-detect |
+| `-o, --output-dir <path>` | Custom output directory | `~/claude_sessions/exports` |
+| `-f, --format <format>` | Output format: `md`, `xml`, or `all` | `all` |
+| `-m, --max-age <seconds>` | Max age for active session detection | `300` |
+| `--max-message-length <chars>` | Truncate messages longer than N characters | unlimited |
+| `--no-copy-to-cwd` | Don't copy export to current directory | `false` |
+| `-V, --version` | Show version number | |
+| `-h, --help` | Show help message | |
+
+## 📁 Export Contents
 
 Each export creates a timestamped directory containing:
 
 ```
-~/claude_sessions/exports/2025-07-02_16-45-00_f33cdb42/
-├── session_info.json      # Complete session metadata including SESSION ID
-├── conversation_full.md   # Human-readable conversation with all content
-├── conversation_full.xml  # Fully labeled XML with complete metadata
-├── raw_messages.jsonl     # Original JSONL data with all fields
-└── summary.txt            # Quick overview with session ID and statistics
+~/claude_sessions/exports/2025-08-31_14-12-44_fe7084a3/
+├── session_info.json      # Complete session metadata
+├── conversation_full.md   # Human-readable conversation
+├── conversation_full.xml  # Fully structured XML with metadata
+├── raw_messages.jsonl     # Original JSONL data
+├── schema.xsd            # XML schema definition
+├── summary.md            # Markdown summary with analytics
+└── summary.txt           # Plain text overview
 ```
 
-### Detailed File Contents
+### File Descriptions
 
-#### **session_info.json** - Complete Session Metadata
-Contains ALL session metadata including:
-- **Session ID** (unique identifier for your chat session)
-- Project directory path
-- Start and end timestamps
-- Total message counts by type
-- Models used
-- Token usage statistics
-
-Example:
+#### **session_info.json** - Complete Metadata
 ```json
 {
-  "session_id": "f33cdb42-0a41-40d4-91eb-c89c109af38a",
-  "project_dir": "/mnt/c/python/myproject",
-  "start_time": "2025-07-02T20:06:59.614Z",
-  "end_time": "2025-07-02T21:39:11.037Z",
-  "total_messages": 145,
-  "user_messages": 58,
-  "assistant_messages": 87,
-  "tool_uses": 42,
-  "models_used": ["claude-opus-4-20250514"]
+  "sessionId": "fe7084a3-01ef-4a6e-bbae-43d3cf7a696c",
+  "projectDir": "/Users/username/myproject",
+  "startTime": "2025-08-31T14:02:49.129Z",
+  "endTime": "2025-08-31T14:12:42.753Z",
+  "totalMessages": 124,
+  "userMessages": 56,
+  "assistantMessages": 68,
+  "toolUses": 56,
+  "modelsUsed": ["claude-sonnet-4-20250514"]
 }
 ```
 
-#### **conversation_full.xml** - Complete XML Export
-Comprehensive XML format with FULL metadata labeling:
-- **Session-level metadata**: Session ID, version, timestamps, working directory
-- **Message-level metadata**: 
-  - UUID and parent-UUID for message relationships
-  - Event types and request IDs
-  - Role (user/assistant) and model information
-- **Content preservation**:
-  - Text messages with proper encoding
-  - Thinking blocks with cryptographic signatures
-  - Tool uses with complete input/output data
-  - Tool execution metadata (response codes, duration, bytes)
-- **Token usage per message**: Input/output tokens, cache tokens, service tier
+#### **conversation_full.xml** - Structured Data
+Complete XML export with:
+- Session-level metadata (ID, timestamps, working directory)
+- Message relationships (UUID, parent-UUID)
+- Content preservation (text, thinking blocks, tool usage)
+- Token usage statistics per message
+- Tool execution metadata (response codes, duration, etc.)
 
-Example XML structure:
-```xml
-<claude-session xmlns="https://claude.ai/session-export/v1" export-version="1.0">
-  <metadata>
-    <session-id>f33cdb42-0a41-40d4-91eb-c89c109af38a</session-id>
-    <working-directory>/mnt/c/python/myproject</working-directory>
-    <start-time>2025-07-02T20:06:59.614Z</start-time>
-    <export-time>2025-07-02T22:15:00.000Z</export-time>
-  </metadata>
-  <messages>
-    <message uuid="492b16e4-af89-408f-b144-ae571d4047b5" 
-             parent-uuid="null" 
-             timestamp="2025-07-02T20:06:59.614Z">
-      <role>user</role>
-      <content>
-        <text>Your message here</text>
-      </content>
-    </message>
-    <message uuid="6892a3b3-63cf-4052-8f3f-850dca83d50c" 
-             parent-uuid="492b16e4-af89-408f-b144-ae571d4047b5"
-             timestamp="2025-07-02T20:07:07.357Z">
-      <role>assistant</role>
-      <model>claude-opus-4-20250514</model>
-      <content>
-        <thinking signature="Es0ICkYIBRgCKkCeXs4...">
-          Internal reasoning content
-        </thinking>
-        <text>Assistant response</text>
-        <tool-use id="toolu_01ABC..." name="Bash">
-          <input>{"command": "ls -la", "description": "List files"}</input>
-        </tool-use>
-      </content>
-      <usage>
-        <input-tokens>1500</input-tokens>
-        <output-tokens>750</output-tokens>
-        <cache-creation-tokens>0</cache-creation-tokens>
-        <service-tier>standard</service-tier>
-      </usage>
-    </message>
-  </messages>
-</claude-session>
-```
-
-#### **conversation_full.md** - Human-Readable Export
-Markdown format including:
-- Session ID prominently displayed at the top
-- All user messages and assistant responses
+#### **conversation_full.md** - Human-Readable
+- Clean, readable conversation format
 - Collapsible thinking/reasoning blocks
 - Tool usage with inputs and outputs
 - Timestamps for each interaction
 
-#### **raw_messages.jsonl** - Original Data
-Complete, unmodified JSONL file containing:
-- Every field from the original Claude Code session
-- Session IDs, UUIDs, parent relationships
-- All metadata exactly as stored by Claude Code
-- Perfect for programmatic processing or analysis
+## 🔧 Environment Variables
 
-#### **summary.txt** - Quick Reference
-Plain text summary featuring:
-- Session ID for easy reference
-- Export timestamp
-- Key statistics
-- File locations
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `CLAUDE_EXPORT_COPY_TO_CWD` | Auto-copy to current directory | `true` |
 
-### Export Formats
+## 📚 API Reference
 
-By default, the tool exports **both** Markdown and XML formats to give you maximum flexibility.
+### Classes
 
-#### Markdown (`--format md`)
-Provides a clean, human-readable view of your conversation with collapsible sections for internal reasoning. Perfect for reviewing conversations and sharing with others.
+#### `SessionFinder`
+- `findProjectSessions(projectPath)` - Find all sessions for a project
+- `getBestSessionToExport(projectPath, sessionId?, maxAge?)` - Get best session to export
+- `identifyCurrentSession(sessions, projectDir)` - Identify current Claude instance session
 
-#### XML (`--format xml`)
-Preserves all available data fields in a structured format:
-- Session metadata and statistics
-- Message hierarchy with UUID relationships
-- Complete tool usage information including execution times and response codes
-- Thinking blocks with cryptographic signatures
-- All token usage statistics
-- Suitable for XSLT transformations and automated processing
+#### `SessionExporter`
+- `exportSession(sessionInfo, options)` - Export a session with options
+- `validateExportOptions(options)` - Validate export options
+- `getExportStats(exportPath)` - Get statistics about an export
 
-#### All Formats (`--format all`) - **Default**
-Generates both Markdown and XML outputs in the same export, giving you the best of both worlds:
-- Human-readable Markdown for easy review
-- Machine-parseable XML with complete data preservation
+#### `SessionParser`
+- `parseJsonlFile(filePath)` - Parse JSONL session file
+- `extractTextContent(content)` - Extract text from message content
+- `extractThinkingContent(content)` - Extract thinking blocks
+- `extractToolUses(content)` - Extract tool usage information
 
-## Auto-Copy to Working Directory
+#### Formatters
+- `MarkdownFormatter` - Format sessions as Markdown
+- `XmlFormatter` - Format sessions as XML with schema
 
-By default, the export tool automatically copies the complete export folder to your current working directory with the name `claude_export_YYYY-MM-DD_HH-MM-SS_sessionid`. This makes it easy to:
-- Include exports in your project repository
-- Access exports without navigating to `~/claude_sessions/exports/`
-- Keep exports with the relevant project code
+### Functions
 
-### Disabling Auto-Copy
+#### `exportCurrentSession(options?)`
+Export the current active session.
 
-You can disable this feature in three ways:
+```typescript
+const result = await exportCurrentSession({
+  sessionId?: string,
+  outputDir?: string,
+  format?: 'md' | 'xml' | 'all',
+  maxAge?: number,
+  copyToCwd?: boolean,
+  maxMessageLength?: number
+});
+```
 
-1. **Command line flag:**
-   ```bash
-   python3 export_claude_session.py --no-copy-to-cwd
-   ```
+#### `findProjectSessions(projectPath?)`
+Find all sessions for a project.
 
-2. **Environment variable:**
-   ```bash
-   export CLAUDE_EXPORT_COPY_TO_CWD=false
-   python3 export_claude_session.py
-   ```
+```typescript
+const sessions = findProjectSessions('/path/to/project');
+// Returns: SessionInfo[]
+```
 
-3. **In your shell configuration:**
-   ```bash
-   # Add to ~/.bashrc or ~/.zshrc
-   export CLAUDE_EXPORT_COPY_TO_CWD=false
-   ```
+#### `parseSessionFile(filePath)`
+Parse a session JSONL file.
 
-The copied folders are automatically excluded from git via the `.gitignore` pattern `claude_export_*/`.
+```typescript
+const { messages, metadata } = parseSessionFile('/path/to/session.jsonl');
+```
 
-## How It Works
+## 🏗️ Development
 
-### Session Detection Process
+### Setup
 
-1. **Project Mapping**: Converts your current directory to Claude's naming convention
-2. **Session Discovery**: Finds all JSONL files in `~/.claude/projects/<project-name>/`
-3. **Active Session Detection**: Identifies sessions modified within the last 5 minutes
-4. **PID Validation**: When multiple active sessions exist:
-   - Detects the parent Claude process PID
-   - Creates a temporary marker file
-   - Identifies which session file responds to the marker
-   - Ensures the correct session is exported
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/cctrace-js.git
+cd cctrace-js
 
-### Multiple Concurrent Sessions
+# Install dependencies
+npm install
 
-The tool handles multiple Claude Code sessions running in the same directory by:
-- Using process hierarchy to identify the calling Claude instance
-- Employing file activity detection to correlate sessions
-- Providing clear feedback about which session is being exported
-- Falling back gracefully when automatic detection isn't possible
+# Build the project
+npm run build
 
-## Troubleshooting
+# Run in development mode
+npm run dev
+
+# Run tests
+npm test
+```
+
+### Project Structure
+
+```
+src/
+├── cli.ts                    # Command-line interface
+├── index.ts                  # Main library exports
+├── types.ts                  # TypeScript type definitions
+├── utils.ts                  # Utility functions
+├── sessionFinder.ts          # Session discovery logic
+├── sessionParser.ts          # JSONL parsing logic
+├── exporter.ts              # Main export orchestration
+└── formatters/
+    ├── markdownFormatter.ts  # Markdown output formatter
+    └── xmlFormatter.ts       # XML output formatter
+```
+
+## 🚢 Publishing Checklist
+
+- [ ] Update version in `package.json`
+- [ ] Run `npm run build` to compile TypeScript
+- [ ] Run `npm test` to ensure all tests pass
+- [ ] Run `npm run lint` to check code style
+- [ ] Update `CHANGELOG.md` with new features/fixes
+- [ ] Update `README.md` if needed
+- [ ] Commit and tag the release: `git tag v1.0.0`
+- [ ] Push to repository: `git push origin main --tags`
+- [ ] Run `npm publish` to publish to NPM
+- [ ] Create GitHub release with release notes
+
+## 🤝 Differences from Python Version
+
+| Feature | Python cctrace | cctrace-js |
+|---------|----------------|------------|
+| **Runtime** | Python 3.6+ | Node.js 16+ |
+| **Installation** | Manual setup | `npm install -g` |
+| **Dependencies** | Standard library only | TypeScript ecosystem |
+| **Type Safety** | Runtime checking | Compile-time TypeScript |
+| **Performance** | Good | Excellent (V8 engine) |
+| **API** | CLI only | CLI + Programmatic API |
+| **Message Control** | Fixed output | Configurable truncation |
+| **Packaging** | Copy script files | NPM package |
+| **Cross-platform** | Linux/WSL | macOS/Linux/Windows |
+
+## 🐛 Troubleshooting
 
 ### "No Claude Code sessions found"
 - Ensure you're running from a directory with active Claude Code sessions
 - Check that `~/.claude/projects/` exists and contains your project
+- Verify Claude Code has been used in this directory
 
 ### "Could not identify specific session"
 - The tool will default to the most recently active session
@@ -318,18 +296,28 @@ The tool handles multiple Claude Code sessions running in the same directory by:
 ### Permission Errors
 - Verify you have read access to `~/.claude/projects/`
 - Ensure write permissions for the export directory
+- Check Node.js permissions
 
-### Session Not Updating
-- Claude Code writes to JSONL files in real-time
-- If a session appears stale, try sending a message to trigger an update
+### TypeScript Compilation Issues
+- Ensure Node.js version >= 16.0.0
+- Run `npm install` to install all dependencies
+- Check TypeScript version compatibility
 
+## 📄 License
 
-### Development
+MIT License - see [LICENSE](LICENSE) file for details.
 
-The tool uses only Python standard library modules, making it dependency-free and easy to deploy.
+## 🙏 Acknowledgments
 
-Key functions:
-- `get_parent_claude_pid()`: Detects if running inside Claude Code
-- `identify_current_session()`: Correlates process with session file
-- `parse_jsonl_file()`: Extracts and processes conversation data
-- `format_message_markdown()`: Converts messages to readable format
+- Original Python [cctrace](https://github.com/jimmc414/cctrace) by jimmc414
+- Claude Code team at Anthropic for the excellent development environment
+- TypeScript and Node.js communities
+
+## 🔗 Related Projects
+
+- [cctrace](https://github.com/jimmc414/cctrace) - Original Python version
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) - Official documentation
+
+---
+
+**Made with ❤️ for the Claude Code community**
