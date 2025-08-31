@@ -37,10 +37,12 @@ This TypeScript version maintains 100% compatibility with the original while add
 - **🔍 PID Cross Reference Validation**: Cross-references process ID to ensure the correct session is exported
 - **📄 Multiple Output Formats**: Generates Markdown, JSON, XML, and raw JSONL files
 - **📊 Session Statistics**: Provides detailed metrics about your conversation
-- **🌐 Programmatic API**: Use as a library in your TypeScript/JavaScript projects
-- **📏 Message Truncation**: Control message length with `--max-message-length` for better LLM context management
+- **🌐 Rich Programmatic API**: Comprehensive library with 10+ functions for session management
+- **🧩 Easy Integration**: Embed in React, Express.js, Webpack, Vite, Jest, and CI/CD pipelines
+- **📏 Smart Message Truncation**: Control message length with `--max-message-length` for better LLM context management
 - **📁 Auto-Copy to Working Directory**: Automatically copies export to your current directory (configurable)
 - **⚡ CLI & Library**: Use as a command-line tool or import as a library
+- **🛡️ Type-Safe**: Full TypeScript support with custom error classes and comprehensive type definitions
 
 ![Demo](https://github.com/user-attachments/assets/b316bd46-94f0-44ef-8030-e73b393cb119)
 
@@ -60,6 +62,10 @@ npm install -g cctrace-js
 
 # Or install locally for your project
 npm install cctrace-js
+
+# TypeScript projects (types included)
+npm install cctrace-js
+# No need for @types/cctrace-js - types are built-in!
 ```
 
 ### Command Line Usage
@@ -81,15 +87,30 @@ cctrace --max-age 600 --output-dir ./exports --no-copy-to-cwd
 ### Programmatic Usage
 
 ```typescript
-import { exportCurrentSession, findProjectSessions } from 'cctrace-js';
+import { 
+  exportCurrentSession, 
+  findProjectSessions, 
+  getSessionStats,
+  sessionToMarkdown 
+} from 'cctrace-js';
 
 // Export current session
 const result = await exportCurrentSession({
   format: 'all',
-  copyToCwd: true
+  copyToCwd: true,
+  maxMessageLength: 5000
 });
 
 console.log(`Exported ${result.metadata.totalMessages} messages`);
+
+// Get session statistics without full export
+const stats = await getSessionStats();
+console.log(`Found ${stats.totalSessions} sessions, latest has ${stats.latestSession?.messageCount} messages`);
+
+// Convert session to markdown in-memory
+const markdown = await sessionToMarkdown('/path/to/session.jsonl', {
+  maxMessageLength: 2000
+});
 
 // Find all sessions for a project
 const sessions = findProjectSessions('/path/to/project');
@@ -161,7 +182,173 @@ Complete XML export with:
 |----------|-------------|---------|
 | `CLAUDE_EXPORT_COPY_TO_CWD` | Auto-copy to current directory | `true` |
 
-## 📚 API Reference
+## 🧩 Library Integration & Embedding
+
+cctrace-js is designed to be easily embedded in JavaScript/TypeScript projects as a library. See our comprehensive guides:
+
+- **📖 [Complete API Reference](./docs/api/core-functions.md)** - Detailed API documentation
+- **🔧 [TypeScript Examples](./docs/examples/typescript.md)** - React hooks, Express.js integration
+- **📦 [JavaScript Examples](./docs/examples/javascript.md)** - CommonJS and ESM usage
+- **🏗️ [Embedding Guide](./docs/guides/embedding.md)** - Webpack, Vite, Jest, CI/CD integration
+
+### Quick Embedding Examples
+
+#### React Hook for Session Management
+```typescript
+import { useCallback, useEffect, useState } from 'react';
+import { getSessionStats, exportCurrentSession } from 'cctrace-js';
+
+export function useClaudeSession() {
+  const [stats, setStats] = useState(null);
+  
+  const refreshStats = useCallback(async () => {
+    try {
+      const sessionStats = await getSessionStats();
+      setStats(sessionStats);
+    } catch (error) {
+      console.warn('No Claude sessions found');
+    }
+  }, []);
+
+  const exportSession = useCallback(async (options = {}) => {
+    return await exportCurrentSession({
+      format: 'md',
+      maxMessageLength: 5000,
+      ...options
+    });
+  }, []);
+
+  return { stats, refreshStats, exportSession };
+}
+```
+
+#### Express.js Middleware
+```javascript
+const { getSessionStats, exportCurrentSession } = require('cctrace-js');
+
+function cctraceMiddleware() {
+  return async (req, res, next) => {
+    // Add export endpoint
+    if (req.path === '/api/export-session' && req.method === 'POST') {
+      try {
+        const result = await exportCurrentSession({
+          format: req.body.format || 'md',
+          maxMessageLength: req.body.maxMessageLength
+        });
+        
+        res.json({
+          success: true,
+          exportPath: result.exportPath,
+          messageCount: result.metadata.totalMessages
+        });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+      return;
+    }
+    next();
+  };
+}
+```
+
+#### Webpack Plugin Integration
+```javascript
+const { exportCurrentSession } = require('cctrace-js');
+
+class CCTracePlugin {
+  apply(compiler) {
+    compiler.hooks.done.tapAsync('CCTracePlugin', async (stats, callback) => {
+      try {
+        await exportCurrentSession({ format: 'all', copyToCwd: false });
+        console.log('✅ Claude session exported after build');
+      } catch (error) {
+        console.warn('⚠️ Session export failed:', error.message);
+      }
+      callback();
+    });
+  }
+}
+```
+
+## 📚 Enhanced API Reference
+
+### Core Functions
+
+#### `exportCurrentSession(options?)`
+Export the current active session with full control.
+
+```typescript
+const result = await exportCurrentSession({
+  sessionId?: string,           // Specific session ID
+  outputDir?: string,           // Custom output directory
+  format?: 'md' | 'xml' | 'all', // Export format(s)
+  maxAge?: number,              // Max session age in seconds
+  copyToCwd?: boolean,          // Copy to current directory
+  maxMessageLength?: number     // Truncate long messages
+});
+```
+
+#### `getSessionStats(projectPath?)`
+Get comprehensive session statistics without full export.
+
+```typescript
+const stats = await getSessionStats();
+// Returns: { totalSessions, latestSession, sessions[], ... }
+```
+
+#### `sessionToMarkdown(sessionPath, options?)`
+Convert session to markdown string in-memory.
+
+```typescript
+const markdown = await sessionToMarkdown('/path/to/session.jsonl', {
+  maxMessageLength: 2000
+});
+```
+
+#### `sessionToXml(sessionPath)`
+Convert session to XML string in-memory.
+
+```typescript
+const xml = await sessionToXml('/path/to/session.jsonl');
+```
+
+#### `extractMessages(sessionPath)`
+Extract conversation messages only (lightweight).
+
+```typescript
+const messages = extractMessages('/path/to/session.jsonl');
+messages.forEach(msg => {
+  console.log(`${msg.role}: ${msg.content}`);
+});
+```
+
+#### `findActiveSessions(projectPath?, maxAgeSeconds?)`
+Find recently active sessions.
+
+```typescript
+const activeSessions = findActiveSessions(process.cwd(), 300);
+console.log(`Found ${activeSessions.length} active sessions`);
+```
+
+### Error Handling
+
+```typescript
+import { 
+  CCTraceError, 
+  SessionNotFoundError, 
+  InvalidSessionError 
+} from 'cctrace-js';
+
+try {
+  await exportCurrentSession();
+} catch (error) {
+  if (error instanceof SessionNotFoundError) {
+    console.log('No Claude sessions found');
+  } else if (error instanceof InvalidSessionError) {
+    console.warn('Session file corrupted');
+  }
+}
+```
 
 ### Classes
 
@@ -184,37 +371,6 @@ Complete XML export with:
 #### Formatters
 - `MarkdownFormatter` - Format sessions as Markdown
 - `XmlFormatter` - Format sessions as XML with schema
-
-### Functions
-
-#### `exportCurrentSession(options?)`
-Export the current active session.
-
-```typescript
-const result = await exportCurrentSession({
-  sessionId?: string,
-  outputDir?: string,
-  format?: 'md' | 'xml' | 'all',
-  maxAge?: number,
-  copyToCwd?: boolean,
-  maxMessageLength?: number
-});
-```
-
-#### `findProjectSessions(projectPath?)`
-Find all sessions for a project.
-
-```typescript
-const sessions = findProjectSessions('/path/to/project');
-// Returns: SessionInfo[]
-```
-
-#### `parseSessionFile(filePath)`
-Parse a session JSONL file.
-
-```typescript
-const { messages, metadata } = parseSessionFile('/path/to/session.jsonl');
-```
 
 ## 🏗️ Development
 
