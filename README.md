@@ -43,6 +43,7 @@ This TypeScript version maintains 100% compatibility with the original while add
 - **📁 Auto-Copy to Working Directory**: Automatically copies export to your current directory (configurable)
 - **⚡ CLI & Library**: Use as a command-line tool or import as a library
 - **🛡️ Type-Safe**: Full TypeScript support with custom error classes and comprehensive type definitions
+- **🚿 Stdout Support**: Export directly to stdout for piping to other tools with `--stdout`
 
 ![Demo](https://github.com/user-attachments/assets/b316bd46-94f0-44ef-8030-e73b393cb119)
 
@@ -82,6 +83,11 @@ cctrace --session-id f33cdb42-0a41-40d4-91eb-c89c109af38a
 
 # Export with custom settings
 cctrace --max-age 600 --output-dir ./exports --no-copy-to-cwd
+
+# Export to stdout for piping
+cctrace --stdout --format md | less
+cctrace --stdout --format xml | xmllint --format -
+cctrace --stdout --format md > session.md
 ```
 
 ### Programmatic Usage
@@ -127,6 +133,7 @@ console.log(`Found ${sessions.length} sessions`);
 | `-m, --max-age <seconds>` | Max age for active session detection | `300` |
 | `--max-message-length <chars>` | Truncate messages longer than N characters | unlimited |
 | `--no-copy-to-cwd` | Don't copy export to current directory | `false` |
+| `--stdout` | Output to stdout instead of files (requires single format) | `false` |
 | `-V, --version` | Show version number | |
 | `-h, --help` | Show help message | |
 

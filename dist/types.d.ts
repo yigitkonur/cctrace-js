@@ -70,6 +70,7 @@ export interface ExportOptions {
     maxAge: number;
     copyToCwd: boolean;
     maxMessageLength?: number;
+    stdout?: boolean;
 }
 export interface ExportResult {
     exportPath: string;
@@ -88,5 +89,6 @@ export interface CLIOptions {
     maxAge: number;
     noCopyToCwd: boolean;
     maxMessageLength?: number;
+    stdout?: boolean;
 }
 //# sourceMappingURL=types.d.ts.map

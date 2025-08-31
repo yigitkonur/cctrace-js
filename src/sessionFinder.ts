@@ -11,7 +11,9 @@ import {
   getParentClaudePid,
   createMarkerFile,
   removeMarkerFile,
-  getFileModTime
+  getFileModTime,
+  log,
+  logError
 } from './utils';
 
 export class SessionFinder {
@@ -46,7 +48,7 @@ export class SessionFinder {
         }
       }
     } catch (error) {
-      console.error(`Error reading Claude project directory: ${error}`);
+      logError(`Error reading Claude project directory: ${error}`);
       return [];
     }
 
@@ -82,7 +84,7 @@ export class SessionFinder {
       return null;
     }
 
-    console.log(`📍 Current Claude Code PID: ${claudePid}`);
+    log(`📍 Current Claude Code PID: ${claudePid}`);
 
     // First, refresh session modification times
     const refreshedSessions: SessionInfo[] = [];
@@ -110,13 +112,13 @@ export class SessionFinder {
       for (const session of refreshedSessions) {
         const currentMtime = getFileModTime(session.path);
         if (currentMtime > markerMtime) {
-          console.log(`✓ Session ${session.sessionId.substring(0, 8)}... was modified after marker creation`);
+          log(`✓ Session ${session.sessionId.substring(0, 8)}... was modified after marker creation`);
           return session;
         }
       }
 
     } catch (error) {
-      console.error(`⚠️  Session identification failed: ${error}`);
+      logError(`⚠️  Session identification failed: ${error}`);
     } finally {
       // Clean up marker file
       if (markerPath) {
@@ -136,24 +138,24 @@ export class SessionFinder {
     maxAge: number = 300
   ): Promise<{ session: SessionInfo; reason: string } | null> {
     
-    console.log(`🔍 Looking for Claude Code sessions in: ${projectPath}`);
+    log(`🔍 Looking for Claude Code sessions in: ${projectPath}`);
     
     // Find all sessions for this project
     const sessions = this.findProjectSessions(projectPath);
     
     if (!sessions.length) {
-      console.log("❌ No Claude Code sessions found for this project.");
-      console.log("   Make sure you're running this from a project directory with active Claude Code sessions.");
+      log("❌ No Claude Code sessions found for this project.");
+      log("   Make sure you're running this from a project directory with active Claude Code sessions.");
       return null;
     }
 
-    console.log(`📂 Found ${sessions.length} session(s) for this project`);
+    log(`📂 Found ${sessions.length} session(s) for this project`);
 
     // If specific session ID provided, find it
     if (sessionId) {
       const specificSession = sessions.find(s => s.sessionId === sessionId);
       if (!specificSession) {
-        console.log(`❌ Session ID ${sessionId} not found.`);
+        log(`❌ Session ID ${sessionId} not found.`);
         return null;
       }
       return {
@@ -166,16 +168,16 @@ export class SessionFinder {
     const activeSessions = this.findActiveSessions(sessions, maxAge);
 
     if (!activeSessions.length) {
-      console.log(`⚠️  No active sessions found (modified within ${maxAge} seconds).`);
-      console.log("\nAvailable sessions:");
+      log(`⚠️  No active sessions found (modified within ${maxAge} seconds).`);
+      log("\nAvailable sessions:");
       
       for (let i = 0; i < Math.min(sessions.length, 5); i++) {
         const session = sessions[i];
         const age = Math.floor(Date.now() / 1000 - session.mtime);
-        console.log(`  ${i + 1}. ${session.sessionId.substring(0, 8)}... (modified ${age}s ago)`);
+        log(`  ${i + 1}. ${session.sessionId.substring(0, 8)}... (modified ${age}s ago)`);
       }
 
-      console.log("\n🔄 Exporting most recent session...");
+      log("\n🔄 Exporting most recent session...");
       return {
         session: sessions[0],
         reason: "Most recent session (no active sessions found)"
@@ -190,20 +192,20 @@ export class SessionFinder {
     }
 
     // Multiple active sessions - try to identify current one
-    console.log(`🔍 Found ${activeSessions.length} active sessions:`);
+    log(`🔍 Found ${activeSessions.length} active sessions:`);
     for (let i = 0; i < activeSessions.length; i++) {
       const session = activeSessions[i];
       const age = Math.floor(Date.now() / 1000 - session.mtime);
       console.log(`  ${i + 1}. ${session.sessionId.substring(0, 8)}... (modified ${age}s ago)`);
     }
 
-    console.log("\n🎯 Attempting to identify current session...");
+    log("\n🎯 Attempting to identify current session...");
 
     // Try to identify the current session
     const currentSession = await this.identifyCurrentSession(sessions, projectPath);
 
     if (currentSession) {
-      console.log(`✅ Successfully identified current session: ${currentSession.sessionId}`);
+      log(`✅ Successfully identified current session: ${currentSession.sessionId}`);
       return {
         session: currentSession,
         reason: "Current session identified via activity marker"
@@ -213,14 +215,14 @@ export class SessionFinder {
     // Fallback logic
     const claudePid = getParentClaudePid();
     if (claudePid) {
-      console.log(`🔍 Running in Claude Code (PID: ${claudePid})`);
-      console.log("⚠️  Could not identify specific session via activity. Using most recent.");
+      log(`🔍 Running in Claude Code (PID: ${claudePid})`);
+      log("⚠️  Could not identify specific session via activity. Using most recent.");
     } else {
-      console.log("⚠️  Not running inside Claude Code. Using most recent session.");
+      log("⚠️  Not running inside Claude Code. Using most recent session.");
     }
 
     const fallbackSession = activeSessions[0];
-    console.log(`📌 Defaulting to: ${fallbackSession.sessionId}`);
+    log(`📌 Defaulting to: ${fallbackSession.sessionId}`);
 
     return {
       session: fallbackSession,

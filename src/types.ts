@@ -78,6 +78,7 @@ export interface ExportOptions {
   maxAge: number;
   copyToCwd: boolean;
   maxMessageLength?: number;
+  stdout?: boolean;
 }
 
 export interface ExportResult {
@@ -99,4 +100,5 @@ export interface CLIOptions {
   maxAge: number;
   noCopyToCwd: boolean;
   maxMessageLength?: number;
+  stdout?: boolean;
 }

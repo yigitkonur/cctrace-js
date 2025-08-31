@@ -2,6 +2,23 @@
 
 The core functions provide the main functionality for exporting and working with Claude Code sessions.
 
+## Stdout Export (CLI Only)
+
+The CLI supports exporting directly to stdout for piping to other tools:
+
+```bash
+# Export to stdout and pipe to less
+cctrace --stdout --format md | less
+
+# Export to stdout and save to file
+cctrace --stdout --format xml > session.xml
+
+# Export and pipe to another tool
+cctrace --stdout --format md | grep "function"
+```
+
+**Note:** The `--stdout` option requires a single format (`md` or `xml`, not `all`).
+
 ## exportCurrentSession()
 
 Export the current active Claude Code session.

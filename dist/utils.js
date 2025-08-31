@@ -50,6 +50,8 @@ exports.shouldCopyToCwd = shouldCopyToCwd;
 exports.getFileModTime = getFileModTime;
 exports.truncateText = truncateText;
 exports.truncateMessageContent = truncateMessageContent;
+exports.log = log;
+exports.logError = logError;
 const child_process_1 = require("child_process");
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
@@ -209,5 +211,21 @@ function truncateMessageContent(content, maxMessageLength) {
     const truncated = content.substring(0, maxMessageLength);
     const omitted = content.length - maxMessageLength;
     return `${truncated}\n\n⚠️ **Message truncated** - ${omitted} characters omitted (max length: ${maxMessageLength})`;
+}
+/**
+ * Log message only if not in stdout mode
+ */
+function log(message) {
+    if (!process.env.CCTRACE_STDOUT_MODE) {
+        console.log(message);
+    }
+}
+/**
+ * Log error only if not in stdout mode
+ */
+function logError(message) {
+    if (!process.env.CCTRACE_STDOUT_MODE) {
+        console.error(message);
+    }
 }
 //# sourceMappingURL=utils.js.map

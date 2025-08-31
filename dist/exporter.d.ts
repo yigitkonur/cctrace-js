@@ -1,8 +1,15 @@
 /**
  * Main session exporter class
  */
-import { SessionInfo, ExportOptions, ExportResult } from './types';
+import { SessionInfo, ExportOptions, ExportResult, ExportFormat } from './types';
 export declare class SessionExporter {
+    /**
+     * Export a session directly to stdout
+     */
+    static exportToStdout(sessionInfo: SessionInfo, options: {
+        format: ExportFormat;
+        maxMessageLength?: number;
+    }): Promise<string>;
     /**
      * Export a session to the specified output directory
      */

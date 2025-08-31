@@ -179,3 +179,21 @@ export function truncateMessageContent(content: string, maxMessageLength?: numbe
   
   return `${truncated}\n\n⚠️ **Message truncated** - ${omitted} characters omitted (max length: ${maxMessageLength})`;
 }
+
+/**
+ * Log message only if not in stdout mode
+ */
+export function log(message: string): void {
+  if (!process.env.CCTRACE_STDOUT_MODE) {
+    console.log(message);
+  }
+}
+
+/**
+ * Log error only if not in stdout mode
+ */
+export function logError(message: string): void {
+  if (!process.env.CCTRACE_STDOUT_MODE) {
+    console.error(message);
+  }
+}

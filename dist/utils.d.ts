@@ -57,4 +57,12 @@ export declare function truncateText(text: string, maxLength?: number): string;
  * Truncate message content based on max message length setting
  */
 export declare function truncateMessageContent(content: string, maxMessageLength?: number): string;
+/**
+ * Log message only if not in stdout mode
+ */
+export declare function log(message: string): void;
+/**
+ * Log error only if not in stdout mode
+ */
+export declare function logError(message: string): void;
 //# sourceMappingURL=utils.d.ts.map

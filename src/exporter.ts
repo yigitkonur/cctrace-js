@@ -19,10 +19,31 @@ import {
   getDefaultExportDir, 
   ensureDirectoryExists, 
   copyDirectorySync,
-  shouldCopyToCwd
+  shouldCopyToCwd,
+  log
 } from './utils';
 
 export class SessionExporter {
+  
+  /**
+   * Export a session directly to stdout
+   */
+  static async exportToStdout(
+    sessionInfo: SessionInfo,
+    options: { format: ExportFormat; maxMessageLength?: number }
+  ): Promise<string> {
+    // Parse the session file
+    const { messages, metadata } = SessionParser.parseJsonlFile(sessionInfo.path);
+    
+    // Generate content based on format
+    if (options.format === ExportFormat.MARKDOWN) {
+      return MarkdownFormatter.formatSession(messages, metadata, options.maxMessageLength);
+    } else if (options.format === ExportFormat.XML) {
+      return XmlFormatter.formatSession(messages, metadata);
+    } else {
+      throw new Error(`Invalid format for stdout: ${options.format}. Use 'md' or 'xml'.`);
+    }
+  }
   
   /**
    * Export a session to the specified output directory
@@ -42,7 +63,7 @@ export class SessionExporter {
 
     const outputDir = exportOptions.outputDir || getDefaultExportDir();
 
-    console.log(`\n📤 Exporting session: ${sessionInfo.sessionId.substring(0, 8)}...`);
+    log(`\n📤 Exporting session: ${sessionInfo.sessionId.substring(0, 8)}...`);
 
     // Parse the session file
     const { messages, metadata } = SessionParser.parseJsonlFile(sessionInfo.path);
@@ -89,15 +110,15 @@ export class SessionExporter {
 
     // Check if actual session ID differs from filename
     if (actualSessionId && actualSessionId !== sessionInfo.sessionId) {
-      console.log(`ℹ️  Note: Actual session ID is ${actualSessionId}`);
-      console.log(`   (File was named ${sessionInfo.sessionId})`);
+      log(`ℹ️  Note: Actual session ID is ${actualSessionId}`);
+      log(`   (File was named ${sessionInfo.sessionId})`);
     }
 
-    console.log(`\n✅ Session exported successfully!`);
-    console.log(`📁 Output directory: ${exportPath}`);
-    console.log(`\nFiles created:`);
+    log(`\n✅ Session exported successfully!`);
+    log(`📁 Output directory: ${exportPath}`);
+    log(`\nFiles created:`);
     for (const file of filesCreated) {
-      console.log(`  - ${file}`);
+      log(`  - ${file}`);
     }
 
     return {
@@ -200,10 +221,10 @@ Exported to: ${exportPath}
       const cwdExportPath = path.join(cwd, cwdExportName);
 
       copyDirectorySync(exportPath, cwdExportPath);
-      console.log(`\n📂 Export copied to current directory: ${cwdExportPath}`);
+      log(`\n📂 Export copied to current directory: ${cwdExportPath}`);
       
     } catch (error) {
-      console.log(`\n⚠️  Could not copy to current directory: ${error}`);
+      log(`\n⚠️  Could not copy to current directory: ${error}`);
     }
   }
 
@@ -263,7 +284,7 @@ Exported to: ${exportPath}
         }
       }
     } catch (error) {
-      console.warn(`Could not read export stats: ${error}`);
+      // Silently fail reading stats
     }
 
     return stats;

@@ -46,6 +46,23 @@ const xmlFormatter_1 = require("./formatters/xmlFormatter");
 const utils_1 = require("./utils");
 class SessionExporter {
     /**
+     * Export a session directly to stdout
+     */
+    static async exportToStdout(sessionInfo, options) {
+        // Parse the session file
+        const { messages, metadata } = sessionParser_1.SessionParser.parseJsonlFile(sessionInfo.path);
+        // Generate content based on format
+        if (options.format === types_1.ExportFormat.MARKDOWN) {
+            return markdownFormatter_1.MarkdownFormatter.formatSession(messages, metadata, options.maxMessageLength);
+        }
+        else if (options.format === types_1.ExportFormat.XML) {
+            return xmlFormatter_1.XmlFormatter.formatSession(messages, metadata);
+        }
+        else {
+            throw new Error(`Invalid format for stdout: ${options.format}. Use 'md' or 'xml'.`);
+        }
+    }
+    /**
      * Export a session to the specified output directory
      */
     static async exportSession(sessionInfo, options = {}) {
@@ -57,7 +74,7 @@ class SessionExporter {
             sessionId: options.sessionId
         };
         const outputDir = exportOptions.outputDir || (0, utils_1.getDefaultExportDir)();
-        console.log(`\n📤 Exporting session: ${sessionInfo.sessionId.substring(0, 8)}...`);
+        (0, utils_1.log)(`\n📤 Exporting session: ${sessionInfo.sessionId.substring(0, 8)}...`);
         // Parse the session file
         const { messages, metadata } = sessionParser_1.SessionParser.parseJsonlFile(sessionInfo.path);
         // Create output directory with timestamp and session ID
@@ -92,14 +109,14 @@ class SessionExporter {
         }
         // Check if actual session ID differs from filename
         if (actualSessionId && actualSessionId !== sessionInfo.sessionId) {
-            console.log(`ℹ️  Note: Actual session ID is ${actualSessionId}`);
-            console.log(`   (File was named ${sessionInfo.sessionId})`);
+            (0, utils_1.log)(`ℹ️  Note: Actual session ID is ${actualSessionId}`);
+            (0, utils_1.log)(`   (File was named ${sessionInfo.sessionId})`);
         }
-        console.log(`\n✅ Session exported successfully!`);
-        console.log(`📁 Output directory: ${exportPath}`);
-        console.log(`\nFiles created:`);
+        (0, utils_1.log)(`\n✅ Session exported successfully!`);
+        (0, utils_1.log)(`📁 Output directory: ${exportPath}`);
+        (0, utils_1.log)(`\nFiles created:`);
         for (const file of filesCreated) {
-            console.log(`  - ${file}`);
+            (0, utils_1.log)(`  - ${file}`);
         }
         return {
             exportPath,
@@ -171,10 +188,10 @@ Exported to: ${exportPath}
             const cwdExportName = `claude_export_${exportDirName}`;
             const cwdExportPath = path.join(cwd, cwdExportName);
             (0, utils_1.copyDirectorySync)(exportPath, cwdExportPath);
-            console.log(`\n📂 Export copied to current directory: ${cwdExportPath}`);
+            (0, utils_1.log)(`\n📂 Export copied to current directory: ${cwdExportPath}`);
         }
         catch (error) {
-            console.log(`\n⚠️  Could not copy to current directory: ${error}`);
+            (0, utils_1.log)(`\n⚠️  Could not copy to current directory: ${error}`);
         }
     }
     /**
@@ -224,7 +241,7 @@ Exported to: ${exportPath}
             }
         }
         catch (error) {
-            console.warn(`Could not read export stats: ${error}`);
+            // Silently fail reading stats
         }
         return stats;
     }
